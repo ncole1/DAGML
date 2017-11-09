@@ -9,7 +9,7 @@ class Rake(object):
     file.close()
   def addOperator(branchNumber,operator):
     self.DAG.find('<'+branchNumber+
-    
+  def editCut
   def removeOperator
   def addBranch
   def removeBranch
@@ -31,5 +31,5 @@ class Rake(object):
         branchEnd=i
         break
     return branchEnd-branchStart-1
-  def editCut
+
   
