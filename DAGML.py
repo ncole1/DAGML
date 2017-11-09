@@ -9,18 +9,27 @@ class Rake(object):
     file.close()
   def addOperator(branchNumber,operator):
     self.DAG.find('<'+branchNumber+
-                               
+    
   def removeOperator
   def addBranch
   def removeBranch
   def addMerge
   def removeMerge
   def branchesInDAG: #return name list
-    output=[]
+    branches=[]
     for i in range(0,self.DAG.__len__):
-      if self.DAG[i][0]=='<':
-      output.append(self.DAG[i][1])
-    return output
-  def operatorsInBranch
+      if self.DAG[i][0].strip()=='<':
+        branches.append(self.DAG[i][1])
+    return branches
+  def operatorsInBranch(branch):
+    for i in range(0,self.DAG.__len__):
+      if self.DAG[i][0].strip()=='<'+str(branch):
+        branchStart=i
+        break
+    for i in range(branchStart,self.DAG.__len__):
+      if self.DAG[i][0].strip()=='<':
+        branchEnd=i
+        break
+    return branchEnd-branchStart-1
   def editCut
   
