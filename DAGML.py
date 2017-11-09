@@ -7,8 +7,11 @@ class Rake(object):
     file=open(path,'w+')
     file.writelines(self.DAG)
     file.close()
-  def addOperator(branchNumber,operator):
-    self.DAG.find('<'+branchNumber+
+  def addOperator(branchNumber,operator): #in progress
+    for i in range(0,self.DAG.__len__):
+      if self.DAG[i][0].strip()=='<'+str(branch):
+        branchStart=i
+        break
   def editCut
   def removeOperator
   def addBranch
