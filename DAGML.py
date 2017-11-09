@@ -15,9 +15,7 @@ class Rake(object):
   def addMerge
   def removeMerge
   def branchesInDAG: #return name list
-    for i in range(,0self.DAG.__len__):
-                  
+    return [i for i, x in enumerate(my_list) if x == "<"]
   def operatorsInBranch
   def editCut
   
-                     
