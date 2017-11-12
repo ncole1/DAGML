@@ -28,14 +28,14 @@ class Rake(object):
   
   def removeMerge
   
-  def branchesInDAG: #return name list
+  def branchesInDAG: #returns name list
     branches=[]
     for i in range(0,self.DAG.__len__):
       if self.DAG[i][0].strip()=='<':
         branches.append(self.DAG[i][1])
     return branches
   
-  def operatorsInBranch(branch):
+  def operatorsInBranch(branch): #returns number, change to name list
     for i in range(0,self.DAG.__len__):
       if self.DAG[i][0].strip()=='<'+str(branch):
         branchStart=i
