@@ -5,7 +5,7 @@ class DAGML(object):
     self.DAG=file.read().split('\n')
     file.close()
     
-  def save(path):
+  def export(path):
     file=open(path,'w+')
     file.writelines(self.DAG)
     file.close()
@@ -31,8 +31,8 @@ class DAGML(object):
   def branchesInDAG: #returns name list
     branches=[]
     for i in range(0,self.DAG.__len__):
-      if self.DAG[i][0].strip()=='<':
-        branches.append(self.DAG[i][1])
+      if self.DAG[i].strip()[0]=='<':
+        branches.append(self.DAG[i].strip()[1:-2])
     return branches
   
   def operatorsInBranch(branch): #returns number, change to name list
