@@ -36,11 +36,16 @@ class DAGML(object):
   def addBranch(Branch, operator):
     self.DAG.insert(self.DAG.index(operator)+1,'<'+Branch+'>')    
   
-  def removeBranch(Branch)
+  def removeBranch(Branch,clear=False)
     if self.DAG[self.DAG.index('<'+Branch+'>')+1].strip()[0] == '<':
       self.DAG.remove(self.DAG.index('<'+Branch+'>')) 
+    elif clear:
+      brindex = self.DAG.index('<'+Branch+'>')
+      self.DAG.remove(brindex) 
+      while self.DAG[brindex].strip()[0] <> '<':
+        self.DAG.remove(brindex)    
     else:
-      print "Invalid attempt to remove branch with one or more operators"
+      print "Branch not removed because it has one or more operators"
       
   
   def addMerge
