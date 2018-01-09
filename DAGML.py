@@ -11,19 +11,23 @@ class DAGML(object):
     file.close()
     
   def addOperator(branchNumber,operator,position): #in progress
-    for i in range(0,self.DAG.__len__):
-      if self.DAG[i].strip()=='<'+str(branchNumber)+'>':
-        branchStart=i
-        break
+    # for i in range(0,self.DAG.__len__):
+    #  if self.DAG[i].strip()=='<'+str(branchNumber)+'>':
+    #    branchStart=i
+    #    break
+    
+    branchStart = self.DAG.index('<'+str(branchNumber)+'>')
+        
     if operatorsInBranch(branchNumber)+1 < position:
       print("Position value too high for branch length") #change to try except later, add this check to linter
     else:
-      branches.insert(branchStart+position,operator)
+      self.DAG.insert(branchStart+position,operator)
       break
         
   def editCut
   
-  def removeOperator
+  def removeOperator(operator):
+    self.DAG.remove(self.DAG.index(operator))
   
   def addBranch
   
