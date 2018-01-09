@@ -50,16 +50,16 @@ class DAGML(object):
   
   def addMerge(MergeBranchList)
     BranchPositions=[]
-    for k in range(0,MergeBranchList.__len__):
-      BranchPositions.append(self.DAG.index('<'+MergeBranchList[k]+'>'))
+    for i in range(0,MergeBranchList.__len__):
+      BranchPositions.append(self.DAG.index('<'+MergeBranchList[k]+'>')) #needs to be stripped to see if same
     FirstBranchPosition = min(BranchPositions)
     LastBranchPosition = max(BranchPositions)
     
-    for j in range(FirstBranchPosition-1,-1,-1):
+    for i in range(FirstBranchPosition-1,-1,-1):
       if self.DAG[j].strip()[0] == '<'
         DestinationBranch = j
         break
-    for l in range(LastBranchPosition+1,self.DAG.__len__):
+    for i in range(LastBranchPosition+1,self.DAG.__len__):
       if self.DAG[l].strip()[0] == '<'
         MergePosition = l
         break 
