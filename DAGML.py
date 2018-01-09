@@ -10,11 +10,16 @@ class DAGML(object):
     file.writelines(self.DAG)
     file.close()
     
-  def addOperator(branchNumber,operator): #in progress
+  def addOperator(branchNumber,operator,position): #in progress
     for i in range(0,self.DAG.__len__):
-      if self.DAG[i][0].strip()=='<'+str(branch):
+      if self.DAG[i].strip()=='<'+str(branchNumber)+'>':
         branchStart=i
         break
+    if operatorsInBranch(branchNumber)+1 < position:
+      print("Position value too high for branch length") #change to try except later, add this check to linter
+    else:
+      branches.insert(branchStart+position,operator)
+      break
         
   def editCut
   
@@ -37,7 +42,7 @@ class DAGML(object):
   
   def operatorsInBranch(branch): #returns number, change to name list
     for i in range(0,self.DAG.__len__):
-      if self.DAG[i][0].strip()=='<'+str(branch):
+      if self.DAG[i].strip()=='<'+str(branch)+'>':
         branchStart=i
         break
     for i in range(branchStart,self.DAG.__len__):
