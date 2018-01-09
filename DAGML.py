@@ -27,13 +27,21 @@ class DAGML(object):
   def editCut
   
   def removeOperator(operator):
-    self.DAG.remove(self.DAG.index(operator)) #remove empty branch if applicable
+    opindex = self.DAG.index(operator)
+    self.DAG.remove(opindex) #remove empty branch if applicable
+    if self.DAG[opindex-1].strip()[0]=='<' and self.DAG[opindex].strip()[0]=='<'
+      self.DAG.remove(opindex-1)
+      
   
   def addBranch(Branch, operator):
     self.DAG.insert(self.DAG.index(operator)+1,'<'+Branch+'>')    
   
   def removeBranch(Branch)
-    self.DAG.remove(self.DAG.index('<'+Branch+'>')) #merge down operators in branch
+    if self.DAG[self.DAG.index('<'+Branch+'>')+1].strip()[0] == '<':
+      self.DAG.remove(self.DAG.index('<'+Branch+'>')) #throw error if operators are left in branch
+    else:
+      print "Invalid attempt to remove branch with one or more operators"
+      
   
   def addMerge
     
