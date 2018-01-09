@@ -29,7 +29,7 @@ class DAGML(object):
   def removeOperator(operator,clear=True):
     opindex = self.DAG.index(operator)
     self.DAG.remove(opindex) #remove empty branch if applicable
-    if clear = False and self.DAG[opindex-1].strip()[0]=='<' and self.DAG[opindex].strip()[0]=='<' :
+    if clear and self.DAG[opindex-1].strip()[0]=='<' and self.DAG[opindex].strip()[0]=='<' :
       self.DAG.remove(opindex-1)
       
   
