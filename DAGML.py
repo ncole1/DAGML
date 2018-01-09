@@ -27,13 +27,16 @@ class DAGML(object):
   def editCut
   
   def removeOperator(operator):
-    self.DAG.remove(self.DAG.index(operator))
+    self.DAG.remove(self.DAG.index(operator)) #remove empty branch if applicable
   
-  def addBranch
+  def addBranch(Branch, operator):
+    self.DAG.insert(self.DAG.index(operator)+1,'<'+Branch+'>')    
   
-  def removeBranch
+  def removeBranch(Branch)
+    self.DAG.remove(self.DAG.index('<'+Branch+'>')) #merge down operators in branch
   
   def addMerge
+    
   
   def removeMerge
   
