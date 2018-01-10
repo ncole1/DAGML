@@ -48,7 +48,7 @@ class DAGML(object):
       print "Branch not removed because it has one or more operators"
       
   
-  def addMerge(MergeBranchList)
+  def addMerge(MergeBranchList) # needs a lot of work!!!
     BranchPositions=[]
     for i in range(0,MergeBranchList.__len__):
       BranchPositions.append(self.DAG.index('<'+MergeBranchList[i]+'>')) #needs to be stripped to see if same
