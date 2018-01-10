@@ -48,25 +48,22 @@ class DAGML(object):
       print "Branch not removed because it has one or more operators"
       
   
-  def addMerge(MergeBranchList) # needs a lot of work!!!
+  def addMerge(MergeBranchList,DestinationBranch) # needs a lot of work!!!
     BranchPositions=[]
+    StrippedDAG = []
+    for i in range(0,self.DAG.__len__):
+      StrippedDAG.append(self.DAG[i].strip()) # Builds up stripped DAG
     for i in range(0,MergeBranchList.__len__):
-      BranchPositions.append(self.DAG.index('<'+MergeBranchList[i]+'>')) #needs to be stripped to see if same
-    FirstBranchPosition = min(BranchPositions)
-    LastBranchPosition = max(BranchPositions)
-    
-    for i in range(FirstBranchPosition-1,-1,-1):
+      BranchPositions.append(StrippedDAG.index('<'+MergeBranchList[i]+'>')) #needs to be stripped to see if same
+    LastBranchPosition = max(BranchPositions)  
+    for i in range(LastBranchPosition+1,self.DAG.__len__): #Starts after last branch is defined
       if self.DAG[i].strip()[0] == '<'
-        DestinationBranch = i
-        break
-    for i in range(LastBranchPosition+1,self.DAG.__len__):
-      if self.DAG[i].strip()[0] == '<'
-        MergePosition = i
+        MergePosition = i #This is the next branch, which is not one of the branches being merged. Merge will be inserted just before this branch is defined
         break 
     BranchesToMerge = ''
     for i in range(0,MergeBranchList.__len__):
-      BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', '
-    self.DAG.insert(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')')
+      BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
+    self.DAG.insert(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')') #inserts merge
     
   
   def removeMerge
