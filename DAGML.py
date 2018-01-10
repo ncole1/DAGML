@@ -66,7 +66,12 @@ class DAGML(object):
     self.DAG.insert(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')') #inserts merge
     
   
-  def removeMerge
+  def removeMerge(MergeBranchList,DestinationBranch)
+    for i in range(0,MergeBranchList.__len__):
+      BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
+    self.DAG.remove(self.DAG.index(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')')) #removes merge
+    
+    
   
   def branchesInDAG: #returns name list
     branches=[]
