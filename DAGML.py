@@ -1,16 +1,18 @@
-class DAGML(object):
+class DAG(object):
   
   def __init__(self, path):
     file=open(path,'r+')
     self.DAG=file.read().split('\n')
+    del self.DAG[-1] #import adds blank line at end
     file.close()
     
-  def export(path):
+  def export(self,path):
     file=open(path,'w+')
-    file.writelines(self.DAG)
+    for i in range(0,len(self.DAG)):
+      file.write(self.DAG[i]+'\n')
     file.close()
     
-  def addOperator(branchNumber,operator,position): #in progress
+  def addOperator(self,branchNumber,operator,position): #in progress
     # for i in range(0,self.DAG.__len__):
     #  if self.DAG[i].strip()=='<'+str(branchNumber)+'>':
     #    branchStart=i
@@ -22,11 +24,11 @@ class DAGML(object):
       print("Position value too high for branch length") #change to try except later, add this check to linter
     else:
       self.DAG.insert(branchStart+position,operator)
-      break
+      
         
-  def editCut
+  #def editCut
   
-  def removeOperator(operator,clear=True):
+  def removeOperator(self,operator,clear=True):
     opindex = self.DAG.index(operator)
     self.DAG.remove(opindex) #remove empty branch if applicable
     if clear and self.DAG[opindex-1].strip()[0]=='<' and self.DAG[opindex].strip()[0]=='<' :
@@ -36,7 +38,7 @@ class DAGML(object):
   def addBranch(Branch, operator):
     self.DAG.insert(self.DAG.index(operator)+1,'<'+Branch+'>')    
   
-  def removeBranch(Branch,clear=False) #recomputing index is expensive, only do it once
+  def removeBranch(self,Branch,clear=False): #recomputing index is expensive, only do it once
     if self.DAG[self.DAG.index('<'+Branch+'>')+1].strip()[0] == '<':
       self.DAG.remove(self.DAG.index('<'+Branch+'>')) 
     elif clear:
@@ -45,10 +47,10 @@ class DAGML(object):
       while self.DAG[branchIndex].strip()[0] != '<':
         self.DAG.remove(branchIndex)    
     else:
-      print "Branch not removed because it has one or more operators"
+      print ("Branch not removed because it has one or more operators")
       
   
-  def addMerge(MergeBranchList,DestinationBranch) # needs a lot of work!!!
+  def addMerge(self,MergeBranchList,DestinationBranch): # needs a lot of work!!!
     BranchPositions=[]
     StrippedDAG = []
     for i in range(0,self.DAG.__len__):
@@ -57,7 +59,7 @@ class DAGML(object):
       BranchPositions.append(StrippedDAG.index('<'+MergeBranchList[i]+'>')) #needs to be stripped to see if same
     LastBranchPosition = max(BranchPositions)  
     for i in range(LastBranchPosition+1,self.DAG.__len__): #Starts after last branch is defined
-      if self.DAG[i].strip()[0] == '<'
+      if self.DAG[i].strip()[0] == '<':
         MergePosition = i #This is the next branch, which is not one of the branches being merged. Merge will be inserted just before this branch is defined
         break 
     BranchesToMerge = ''
@@ -66,21 +68,21 @@ class DAGML(object):
     self.DAG.insert(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')') #inserts merge
     
   
-  def removeMerge(MergeBranchList,DestinationBranch)
+  def removeMerge(self,MergeBranchList,DestinationBranch):
     for i in range(0,MergeBranchList.__len__):
       BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
     self.DAG.remove(self.DAG.index(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')')) #removes merge
     
     
   
-  def branchesInDAG: #returns name list
+  def branchesInDAG(self): #returns name list
     branches=[]
     for i in range(0,self.DAG.__len__):
       if self.DAG[i].strip()[0]=='<':
         branches.append(self.DAG[i].strip()[1:-2])
     return branches
   
-  def operatorsInBranch(branch): #returns number, change to name list
+  def operatorsInBranch(self,branch): #returns number, change to name list
     for i in range(0,self.DAG.__len__):
       if self.DAG[i].strip()=='<'+str(branch)+'>':
         branchStart=i
