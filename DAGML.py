@@ -52,7 +52,7 @@ class DAG(object):
       file.write(SpaceString+self.strippedDAG[i]+'\n')
     file.close()
     
-  def addOperator(self,branchName,operator,position, NumberOfSpacesInIndent): #in progress
+  def addOperator(self,branchName,operator,position): #in progress
     # for i in range(0ipyth,len(self.DAG)):
     #  if self.DAG[i].strip()=='<'+str(branchNumber)+'>':
     #    branchStart=i
@@ -60,7 +60,7 @@ class DAG(object):
     
     branchStart = self.strippedDAG.index('<'+branchName+'>')
         
-    if self.operatorsInBranch(branchName,NumberOfSpacesInIndent)+1 < position:
+    if self.operatorsInBranch(branchName)+1 < position:
       print("Position value too high for branch length") #change to try except later, add this check to linter
     else:
       self.strippedDAG.insert(branchStart+position+1,operator)
@@ -68,19 +68,19 @@ class DAG(object):
       
         
   #def editCut
-  
-  def removeOperator(self,operator,clear=True,duplicateIndex=0): #clarify what clear does
+
+  def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
       operatorIndex = self.strippedDAG.index(str(operator)) #what if you have two identical operators in the DAG?
       self.strippedDAG.remove(str(operator)) #remove empty branch if applicable
-      self.IndentationOfDAG.remove(self.IndentationOfDAG(operatorIndex))
+      self.IndentationOfDAG.remove(self.IndentationOfDAG[operatorIndex])
       if clear and self.strippedDAG[operatorIndex-1][0]=='<' and self.strippedDAG[operatorIndex][0]=='<' :
         self.strippedDAG.remove(operatorIndex-1)
         self.IndentationOfDAG.remove(operatorIndex-1) 
     elif type(operator)==str:
       operatorIndex = self.strippedDAG.index(operator) #what if you have two identical operators in the DAG?
       self.strippedDAG.remove(operator) #remove empty branch if applicable
-      self.IndentationOfDAG.remove(self.IndentationOfDAG(operatorIndex))
+      self.IndentationOfDAG.remove(self.IndentationOfDAG[operatorIndex])
       if clear and self.strippedDAG[operatorIndex-1][0]=='<' and self.strippedDAG[operatorIndex][0]=='<' :
         self.strippedDAG.remove(operatorIndex-1)
         self.IndentationOfDAG.remove(operatorIndex-1)          
@@ -90,28 +90,28 @@ class DAG(object):
     #duplicateIndex behavior: for str input, generate ordered list of indices of operators with name (using for loop)
     #then use list[duplicateIndex] to select indice, then use that operator
         
-  
   def addBranch(self, Branch, operator):
     self.strippedDAG.insert(self.strippedDAG.index(operator)+1,'<'+Branch+'>')
-    self.IndentationOfDAG.insert(self.strippedDAG.index(operator)+1,self.IndentationOfDAG(self.strippedDAG.index(operator)))    
+    self.IndentationOfDAG.insert(self.strippedDAG.index(operator)+1,self.IndentationOfDAG[self.strippedDAG.index(operator)]+1)    
   
   def removeBranch(self,Branch,clear=False): #recomputing index is expensive, only do it once
     if self.strippedDAG[self.strippedDAG.index('<'+Branch+'>')+1][0] == '<':
-      self.strippedDAG.remove(self.strippedDAG.index('<'+Branch+'>')) 
-      self.IndentationOfDAG.remove(self.strippedDAG.index('<'+Branch+'>'))
+      del self.IndentationOfDAG [self.strippedDAG.index('<'+Branch+'>')]
+      del self.strippedDAG [self.strippedDAG.index('<'+Branch+'>')]
     elif clear:
       branchIndex = self.strippedDAG.index('<'+Branch+'>')
-      self.strippedDAG.remove(branchIndex) 
-      self.IndentationOfDAG.remove(branchIndex)
+      del self.strippedDAG[branchIndex] 
+      del self.IndentationOfDAG[branchIndex]
       while self.strippedDAG[branchIndex][0] != '<':
-        self.strippedDAG.remove(branchIndex)    
-        self.IndentationOfDAG.remove(branchIndex)
+        del self.strippedDAG[branchIndex] 
+        del self.IndentationOfDAG[branchIndex]
     else:
-      print ("Branch not removed because it has one or more opderators")
+      print ("Branch not removed because it has one or more operators")
       
   
   def addMerge(self,MergeBranchList,DestinationBranch): # needs a lot of work!!!
     BranchPositions=[]
+    MergePosition = len(self.strippedDAG)
     for i in range(0,len(MergeBranchList)):
       BranchPositions.append(self.strippedDAG.index('<'+MergeBranchList[i]+'>')) #needs to be stripped to see if same
     LastBranchPosition = max(BranchPositions)  
@@ -119,19 +119,25 @@ class DAG(object):
       if self.strippedDAG[i][0] == '<':
         MergePosition = i #This is the next branch, which is not one of the branches being merged. Merge will be inserted just before this branch is defined
         break 
+    print(MergePosition)
+    print(LastBranchPosition)
     BranchesToMerge = ''
     for i in range(0,len(MergeBranchList)):
       BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
-    indentationOfMerge = self.IndentationOfDAG(MergePosition)
+    if MergePosition < len(self.strippedDAG):
+      indentationOfMerge = max([self.IndentationOfDAG[MergePosition]-1,0])
+    else:
+      indentationOfMerge = max([self.IndentationOfDAG[MergePosition-1]-1,0])
     self.strippedDAG.insert(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')') #inserts merge
     self.IndentationOfDAG.insert(MergePosition,indentationOfMerge)
   
-  def removeMerge(self,MergeBranchList,DestinationBranch, MergePosition):
-    BranchesToMerge = []
+  def removeMerge(self,MergeBranchList,DestinationBranch):
+    BranchesToMerge = ''
     for i in range(0,len(MergeBranchList)):
       BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
-    self.strippedDAG.remove(self.strippedDAG.index(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')')) #removes merge
-    self.IndentationofDAG.remove(self.strippedDAG.index(MergePosition,'merge('+BranchesToMerge+DestinationBranch+')'))
+    del self.IndentationOfDAG[self.strippedDAG.index('merge('+BranchesToMerge+DestinationBranch+')')]
+    del self.strippedDAG[self.strippedDAG.index('merge('+BranchesToMerge+DestinationBranch+')')] #removes merge
+    
     
   
   def branchesInDAG(self): #returns name list
@@ -139,10 +145,10 @@ class DAG(object):
 
     for i in range(0,len(self.strippedDAG)):
       if self.strippedDAG[i][0]=='<':
-        branches.append(self.strippedDAG[i][1:-2])
+        branches.append(self.strippedDAG[i][1:-1])
     return branches
   
-  def operatorsInBranch(self,branch,NumberOfSpacesInIndent): #returns number, change to name list
+  def operatorsInBranch(self,branch): #returns number, change to name list
     #print self.IndentationOfDAG
     branchStart=int()
     branchEnd=int()
