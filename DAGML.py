@@ -67,10 +67,12 @@ class DAG(object):
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
         
-  def editIO: #operators
+  def editIO(self,input,output): #operators
   
-  def editSlice: #branches
-
+  def addSlice(self,branch,slice): #branches
+  
+  def removeSlice(self,branch,index=0):
+ 
   def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
       operatorIndex = self.strippedDAG.index(str(operator)) #what if you have two identical operators in the DAG?
