@@ -67,7 +67,9 @@ class DAG(object):
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
         
-  #def editCut
+  def editIO: #operators
+  
+  def editSlice: #branches
 
   def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
