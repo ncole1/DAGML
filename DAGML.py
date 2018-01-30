@@ -67,21 +67,9 @@ class DAG(object):
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
         
-  def editArguments: #operators
+  def editIO: #operators
   
-  def editSlice: #branches and concurrencys
-  
-  def addCmerge:
-  
-  def removeCmerge:
-  
-  def addConcurrency:
-  
-  def removeConcurrency:
-  
-  def concurrencysInDAG:
-  
-  def operatorsInConcurrency:
+  def editSlice: #branches
 
   def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
