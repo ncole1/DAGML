@@ -41,7 +41,21 @@ class DAG(object):
     self.strippedDAG = [] #should be strippedDAG
     for i in range(0,len(self.DAG)):
       self.strippedDAG.append(self.DAG[i].strip())     
- 
+  def editIO(self,operator, input,output, duplicateIndex=0): #operators
+    operatorIndex = self.strippedDAG.index(operator) #operator string must include arguments of pre-existing operator
+    newOperator = ''
+    update = 0
+    for j in range(len(operator)-2,-1,-1):
+      if operator[j] == '(':
+        newOperator = operator[0:j] + '(' + input + ',' + output + ')'
+        update = 1
+        break
+    if update == 1:
+      del self.strippedDAG[operatorIndex]
+      self.strippedDAG.insert(operatorIndex,newOperator)    
+    else:
+      print("Open parenthesis not found in operator string")
+    #Duplicates not accounted for  
   def export(self,path):
     file=open(path,'w+')
     SpaceString = ''
