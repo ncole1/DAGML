@@ -80,9 +80,6 @@ class DAG(object):
       self.strippedDAG.insert(branchStart+position+1,operator)
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
-        
-  def editIO: #operators
-  
   def editSlice: #branches
 
   def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
