@@ -11,21 +11,21 @@ class DAG(object):
     spaces = int()
     maxSpaces = int() 
     self.spacesPerIndent = 999
-    for i in range(0,len(self.DAG)):
+    for i in range(0,len(self.DAG)):#goes through DAG line by line
       currentDAGItem= self.DAG[i] 
       for j in range(0,len(currentDAGItem)):
         if currentDAGItem[j] != ' ':
-          spaces = j
+          spaces = j #j increments until the j-th character in the i-th DAG line is not blank
           break
         elif j == len(currentDAGItem)-1:
-          spaces = j+1
+          spaces = j+1 #handles the case where it goes all the way to the end of the line
       if spaces > 0 and spaces < self.spacesPerIndent:     
-        self.spacesPerIndent = spaces  
+        self.spacesPerIndent = spaces #This keeps track of the smallest nonzero number of spaces at the beginning of a line 
       if spaces > maxSpaces:
-        maxSpaces = spaces  
+        maxSpaces = spaces #Largest number of spaces at beginning of line 
     if self.spacesPerIndent == 999 and maxSpaces > 0 : #Minimum number of spaces at the beginning of an indented line does not have a value below 999
       print("Error processing Indentation/spaces in input file")  
-    for i in range(0,len(self.DAG)):
+    for i in range(0,len(self.DAG)): #Goes through DAG again line by line and assigns number of indents, since the previous loop found the number of spaces in one indent to 
       currentDAGItem = self.DAG[i]
       for j in range(0,len(currentDAGItem)):
         if currentDAGItem[j] != ' ':
@@ -41,6 +41,9 @@ class DAG(object):
     self.strippedDAG = [] #should be strippedDAG
     for i in range(0,len(self.DAG)):
       self.strippedDAG.append(self.DAG[i].strip())     
+    self.lint()
+  def lint(self)
+    #code
   def editIO(self,operator, input,output, duplicateIndex=0): #operators
     operatorIndex = self.strippedDAG.index(operator) #operator string must include arguments of pre-existing operator
     newOperator = ''
