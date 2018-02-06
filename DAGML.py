@@ -83,7 +83,8 @@ class DAG(object):
       self.strippedDAG.insert(branchStart+position+1,operator)
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
-  def editSlice: #branches
+  def editSlice(self,brancStart,newSlice): #branches
+    #change branch at branchStart to have slice newSlice
 
   def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
