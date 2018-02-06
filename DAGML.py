@@ -25,7 +25,7 @@ class DAG(object):
         maxSpaces = spaces #Largest number of spaces at beginning of line 
     if self.spacesPerIndent == 999 and maxSpaces > 0 : #Minimum number of spaces at the beginning of an indented line does not have a value below 999
       print("Error processing Indentation/spaces in input file")  
-    for i in range(0,len(self.DAG)): #Goes through DAG again line by line and assigns number of indents, since the previous loop found the number of spaces in one indent to 
+    for i in range(0,len(self.DAG)): #Goes through DAG again line by line and assigns number of indents, since the previous loop found the number of spaces in one indent  
       currentDAGItem = self.DAG[i]
       for j in range(0,len(currentDAGItem)):
         if currentDAGItem[j] != ' ':
@@ -38,12 +38,42 @@ class DAG(object):
       else:
         print("WARNING: Input DAG file has improper or irregular spacing in line indentations")  
       
-    self.strippedDAG = [] #should be strippedDAG
+    self.DAGNames = [] #should be strippedDAG
+    self.DAGTuples = []
+    self.strippedDAG = []
+    tupleNumbers = []
+    lineBreakPoint = 0 
+    mergeLine = False
+    isDigitOrColon = []
     for i in range(0,len(self.DAG)):
-      self.strippedDAG.append(self.DAG[i].strip())     
-    self.lint()
-  def lint(self)
-    #code
+      tupleNumbers = []  
+      strippedDAGItem = self.DAG[i].strip()  
+      mergeLine = False
+      isDigitOrColon = []
+      for j in range(0,len(strippedDAGItem)):
+        isDigitOrColon.append(((strippedDAGItem[j]).isdigit()) or (strippedDAGItem[j] == ':'))
+      for j in range(0,len(strippedDAGItem)):  
+        if strippedDAGItem[j] == '(' or strippedDAGItem[j] == '[' or j == len(strippedDAGItem)-1:  
+          lineBreakPoint = j
+          break
+      if len(strippedDAGItem) > 4:
+        if strippedDAGItem[0:5] == 'merge':
+          mergeLine = True
+      if (not mergeLine):
+        if lineBreakPoint < 1:
+          print("WARNING: Operator and/or branch name(s) given as empty strings.")  
+        self.DAGNames.append(strippedDAGItem[0:lineBreakPoint])
+        for k in range(lineBreakPoint,len(strippedDAGItem)-1):
+          if (isDigitOrColon[k]) and (not (isDigitOrColon[k-1])):
+            for l in range(k,len(strippedDAGItem)-1):
+              if (not (isDigitOrColon[l+1])):
+                tupleNumbers.append(strippedDAGItem[k:l+1])
+                break
+        self.DAGTuples.append(tuple(tupleNumbers))
+      else:
+        self.DAGNames.append(self.DAG[i].strip())  
+        self.DAGTuples.append(tuple())        
+      self.strippedDAG.append(self.DAG[i].strip())    
   def editIO(self,operator, input,output, duplicateIndex=0): #operators
     operatorIndex = self.strippedDAG.index(operator) #operator string must include arguments of pre-existing operator
     newOperator = ''
@@ -62,11 +92,27 @@ class DAG(object):
   def export(self,path):
     file=open(path,'w+')
     SpaceString = ''
+    reconstitutedStrippedDAGItem = ''
+    properStrippedDAGItem = ''
+    DAGNameItem = ''
     for i in range(0,len(self.IndentationOfDAG)):
       SpaceString = ''  
+      DAGNameItem = self.DAGNames[i] + ' '
+      if str(self.DAGTuples[i]) != '()' or DAGNameItem[0] == '<':
+        reconstitutedStrippedDAGItem = self.DAGNames[i] + str(self.DAGTuples[i])
+      else:
+        reconstitutedStrippedDAGItem = self.DAGNames[i]  
+      properStrippedDAGItem = ''
+      for j in range(0,len(reconstitutedStrippedDAGItem)):
+        if (reconstitutedStrippedDAGItem[j] != '\'') and ((reconstitutedStrippedDAGItem[j] != ' ') or j < len(self.DAGNames[i])):
+          properStrippedDAGItem = properStrippedDAGItem + (reconstitutedStrippedDAGItem[j])
+      if DAGNameItem[0] == '<':
+        properStrippedDAGItem = properStrippedDAGItem.replace(")","]") 
+        properStrippedDAGItem = properStrippedDAGItem.replace("(","[") 
+        properStrippedDAGItem = properStrippedDAGItem.replace(",","][") 
       for j in range(0,self.spacesPerIndent*self.IndentationOfDAG[i]):
         SpaceString = SpaceString+' '
-      file.write(SpaceString+self.strippedDAG[i]+'\n')
+      file.write(SpaceString+properStrippedDAGItem+'\n')
     file.close()
     
   def addOperator(self,branchName,operator,position): #in progress
@@ -75,7 +121,7 @@ class DAG(object):
     #    branchStart=i
     #    break
     
-    branchStart = self.strippedDAG.index('<'+branchName+'>')
+    branchStart = self.strippedDAG.index('<'+branchName)
         
     if self.operatorsInBranch(branchName)+1 < position:
       print("Position value too high for branch length") #change to try except later, add this check to linter
@@ -83,8 +129,7 @@ class DAG(object):
       self.strippedDAG.insert(branchStart+position+1,operator)
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
-        
-  #def editCut
+  #def editSlice(self): #branches
 
   def removeOperator(self,operator,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
@@ -108,15 +153,15 @@ class DAG(object):
     #then use list[duplicateIndex] to select indice, then use that operator
         
   def addBranch(self, Branch, operator):
-    self.strippedDAG.insert(self.strippedDAG.index(operator)+1,'<'+Branch+'>')
+    self.strippedDAG.insert(self.strippedDAG.index(operator)+1,'<'+Branch)
     self.IndentationOfDAG.insert(self.strippedDAG.index(operator)+1,self.IndentationOfDAG[self.strippedDAG.index(operator)]+1)    
   
   def removeBranch(self,Branch,clear=False): #recomputing index is expensive, only do it once
-    if self.strippedDAG[self.strippedDAG.index('<'+Branch+'>')+1][0] == '<':
-      del self.IndentationOfDAG [self.strippedDAG.index('<'+Branch+'>')]
-      del self.strippedDAG [self.strippedDAG.index('<'+Branch+'>')]
+    if self.strippedDAG[self.strippedDAG.index('<'+Branch)+1][0] == '<':
+      del self.IndentationOfDAG [self.strippedDAG.index('<'+Branch)]
+      del self.strippedDAG [self.strippedDAG.index('<'+Branch)]
     elif clear:
-      branchIndex = self.strippedDAG.index('<'+Branch+'>')
+      branchIndex = self.strippedDAG.index('<'+Branch)
       del self.strippedDAG[branchIndex] 
       del self.IndentationOfDAG[branchIndex]
       while self.strippedDAG[branchIndex][0] != '<':
@@ -130,7 +175,7 @@ class DAG(object):
     BranchPositions=[]
     MergePosition = len(self.strippedDAG)
     for i in range(0,len(MergeBranchList)):
-      BranchPositions.append(self.strippedDAG.index('<'+MergeBranchList[i]+'>')) #needs to be stripped to see if same
+      BranchPositions.append(self.strippedDAG.index('<'+MergeBranchList[i])) #needs to be stripped to see if same
     LastBranchPosition = max(BranchPositions)  
     for i in range(LastBranchPosition+1,len(self.strippedDAG)): #Starts after last branch is defined
       if self.strippedDAG[i][0] == '<':
@@ -170,7 +215,7 @@ class DAG(object):
     branchStart=int()
     branchEnd=int()
     for i in range(0,len(self.strippedDAG)):
-      if self.strippedDAG[i] =='<'+str(branch)+'>':
+      if self.strippedDAG[i] =='<'+str(branch):
         branchStart=i
         print(str(branchStart)+'_')
         break
