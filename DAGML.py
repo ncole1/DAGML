@@ -79,6 +79,11 @@ class DAG(object):
     del self.DAGTuples[operatorIndex]
     self.DAGTuples.insert(operatorIndex,(input, output))    
     #Duplicates not accounted for  
+  def editSlice(self,branch, tupleStrings, duplicateIndex=0):  #format tupleStrings like ('6:7','8:9')
+    branchIndex = self.DAGNames.index('<'+branch) 
+    del self.DAGTuples[branchIndex]
+    self.DAGTuples.insert(branchIndex,tuple(tupleStrings))    
+    #Duplicates not accounted for  
   def export(self,path):
     file=open(path,'w+')
     SpaceString = ''
@@ -106,11 +111,6 @@ class DAG(object):
     file.close()
     
   def addOperator(self,branchName,operator,input,output,position): #in progress
-    # for i in range(0ipyth,len(self.DAG)):
-    #  if self.DAG[i].strip()=='<'+str(branchNumber)+'>':
-    #    branchStart=i
-    #    break
-    
     branchStart = self.DAGNames.index('<'+branchName)
         
     if self.operatorsInBranch(branchName)+1 < position:
@@ -119,7 +119,9 @@ class DAG(object):
       self.DAGNames.insert(branchStart+position+1,operator)
       self.DAGTuples.insert(branchStart+position+1,(input, output))
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
-  
+      
+  #def editSlice(self): #branches
+
   def removeOperator(self,operator,input,output,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
       operatorIndex = self.DAGNames.index(str(operator)) #what if you have two identical operators in the DAG?
