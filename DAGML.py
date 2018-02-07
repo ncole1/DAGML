@@ -120,7 +120,7 @@ class DAG(object):
       self.DAGTuples.insert(branchStart+position+1,(input, output))
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
       
-  #def editSlice(self): #branches
+  
 
   def removeOperator(self,operator,input,output,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
