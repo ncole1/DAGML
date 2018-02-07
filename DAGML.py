@@ -74,16 +74,19 @@ class DAG(object):
         self.DAGNames.append(self.DAG[i].strip())  
         self.DAGTuples.append(tuple())        
       #self.strippedDAG.append(self.DAG[i].strip())    
+      
   def editIO(self,operator, input,output, duplicateIndex=0): #operators
     operatorIndex = self.DAGNames.index(operator) #operator string must include arguments of pre-existing operator
     del self.DAGTuples[operatorIndex]
     self.DAGTuples.insert(operatorIndex,(input, output))    
     #Duplicates not accounted for  
+    
   def editSlice(self,branch, tupleStrings, duplicateIndex=0):  #format tupleStrings like ('6:7','8:9')
     branchIndex = self.DAGNames.index('<'+branch) 
     del self.DAGTuples[branchIndex]
     self.DAGTuples.insert(branchIndex,tuple(tupleStrings))    
     #Duplicates not accounted for  
+    
   def export(self,path):
     file=open(path,'w+')
     SpaceString = ''
@@ -119,8 +122,6 @@ class DAG(object):
       self.DAGNames.insert(branchStart+position+1,operator)
       self.DAGTuples.insert(branchStart+position+1,(input, output))
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
-      
-  
 
   def removeOperator(self,operator,input,output,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
@@ -151,6 +152,7 @@ class DAG(object):
     self.DAGNames.insert(self.DAGNames.index(operator)+1,'<'+Branch)
     self.DAGTuples.insert(self.DAGNames.index(operator)+1,tuple(tupleStrings))
     self.IndentationOfDAG.insert(self.DAGNames.index(operator)+1,self.IndentationOfDAG[self.DAGNames.index(operator)]+1)    
+    
   def removeBranch(self,Branch,clear=False,mergeCheck = True): #recomputing index is expensive, only do it once
     mergeConflict = False
     if mergeCheck :
