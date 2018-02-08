@@ -1,6 +1,6 @@
 class DAG(object):
 
-	
+
 	def __init__(self, path,spacing=True):
 		file=open(path,'r+')
 		self.DAG=file.read().split('\n') 
@@ -38,7 +38,6 @@ class DAG(object):
 				self.indentationOfDAG.append(numberOfSpaces//self.spacesPerIndent) 
 			else:
 				print("WARNING: Input DAG file has improper or irregular spacing in line indentations")  
-			
 		self.DAGNames = [] #should be strippedDAG
 		self.DAGTuples = []
 		#self.strippedDAG = []
@@ -74,22 +73,22 @@ class DAG(object):
 			else:
 				self.DAGNames.append(self.DAG[i].strip())  
 				self.DAGTuples.append(tuple())        
-				 
-			
+
+
 	def editIO(self,operator, input,output, duplicateIndex=0): #operators
 		operatorIndex = self.DAGNames.index(operator) #operator string must include arguments of pre-existing operator
 		del self.DAGTuples[operatorIndex]
 		self.DAGTuples.insert(operatorIndex,(input, output))    
 		#Duplicates not accounted for  
-	
-	
+
+
 	def editSlice(self,branch, tupleStrings, duplicateIndex=0):  #format tupleStrings like ('6:7','8:9')
 		branchIndex = self.DAGNames.index('<'+branch) 
 		del self.DAGTuples[branchIndex]
 		self.DAGTuples.insert(branchIndex,tuple(tupleStrings))    
 		#Duplicates not accounted for  
-	
-	
+
+
 	def export(self,path):
 		file=open(path,'w+')
 		spaceString = ''
@@ -115,8 +114,8 @@ class DAG(object):
 				spaceString = spaceString+' '
 			file.write(spaceString+properStrippedDAGItem+'\n')
 		file.close()
-	
-	
+
+
 	def addOperator(self,branchName,operator,input,output,position): #in progress
 		branchStart = self.DAGNames.index('<'+branchName)
 				
@@ -126,8 +125,8 @@ class DAG(object):
 			self.DAGNames.insert(branchStart+position+1,operator)
 			self.DAGTuples.insert(branchStart+position+1,(input, output))
 			self.indentationOfDAG.insert(branchStart+position+1,self.indentationOfDAG[branchStart]) 
-	
-	
+
+
 	def removeOperator(self,operator,input,output,clear=True,duplicateIndex=0): #clear means remove empty branches
 		if type(operator)==int:
 			operatorIndex = self.DAGNames.index(str(operator)) #what if you have two identical operators in the DAG?
@@ -149,16 +148,14 @@ class DAG(object):
 				del self.indentationOfDAG [operatorIndex-1]          
 		else:
 			print("operator must be integer or string")  
-			
-		#duplicateIndex behavior: for str input, generate ordered list of indices of operators with name (using for loop)
-		#then use list[duplicateIndex] to select indice, then use that operator
-				
+
+
 	def addBranch(self, branch, tupleStrings, operator): #format tupleStrings like ('6:7','8:9')
 		self.DAGNames.insert(self.DAGNames.index(operator)+1,'<'+branch)
 		self.DAGTuples.insert(self.DAGNames.index(operator)+1,tuple(tupleStrings))
 		self.indentationOfDAG.insert(self.DAGNames.index(operator)+1,self.indentationOfDAG[self.DAGNames.index(operator)]+1)    
-	
-	
+
+
 	def removeBranch(self,branch,clear=False,mergeCheck = True): #recomputing index is expensive, only do it once
 		mergeConflict = False
 		if mergeCheck :
@@ -185,8 +182,8 @@ class DAG(object):
 					del self.indentationOfDAG[branchIndex]
 			else:
 				print ("Branch not removed because it has one or more operators")
-			
-	
+
+
 	def addMerge(self,mergeBranchList,destinationBranch): # needs a lot of work!!!
 		branchPositions=[]
 		mergePosition = len(self.DAGNames)
@@ -209,15 +206,15 @@ class DAG(object):
 		self.DAGNames.insert(mergePosition,'merge('+branchesToMerge+destinationBranch+')') #inserts merge
 		self.DAGTuples.insert(mergePosition,tuple())
 		self.indentationOfDAG.insert(mergePosition,indentationOfMerge)
-	
-	
+
+
 	def removeMerge(self,mergeBranchList,destinationBranch):
 		branchesToMerge = ''
 		for i in range(0,len(mergeBranchList)):
 			branchesToMerge = branchesToMerge + mergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
 		del self.indentationOfDAG[self.DAGNames.index('merge('+branchesToMerge+destinationBranch+')')]
 		del self.DAGNames[self.DAGNames.index('merge('+branchesToMerge+destinationBranch+')')] #removes merge
-			
+	
 	
 	def branchesInDAG(self): #returns name list
 		branches=[]
@@ -467,7 +464,7 @@ class DAG(object):
         break
     return branchEnd-branchStart-1
   
-    
+ 
     def __init__(self, path,spacing=True):
         file=open(path,'r+')
         self.DAG=file.read().split('\n') 
