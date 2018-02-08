@@ -73,20 +73,22 @@ class DAG(object):
       else:
         self.DAGNames.append(self.DAG[i].strip())  
         self.DAGTuples.append(tuple())        
-      #self.strippedDAG.append(self.DAG[i].strip())    
+         
       
   def editIO(self,operator, input,output, duplicateIndex=0): #operators
     operatorIndex = self.DAGNames.index(operator) #operator string must include arguments of pre-existing operator
     del self.DAGTuples[operatorIndex]
     self.DAGTuples.insert(operatorIndex,(input, output))    
     #Duplicates not accounted for  
-    
+  
+  
   def editSlice(self,branch, tupleStrings, duplicateIndex=0):  #format tupleStrings like ('6:7','8:9')
     branchIndex = self.DAGNames.index('<'+branch) 
     del self.DAGTuples[branchIndex]
     self.DAGTuples.insert(branchIndex,tuple(tupleStrings))    
     #Duplicates not accounted for  
-    
+  
+  
   def export(self,path):
     file=open(path,'w+')
     SpaceString = ''
@@ -112,7 +114,8 @@ class DAG(object):
         SpaceString = SpaceString+' '
       file.write(SpaceString+properStrippedDAGItem+'\n')
     file.close()
-    
+  
+  
   def addOperator(self,branchName,operator,input,output,position): #in progress
     branchStart = self.DAGNames.index('<'+branchName)
         
@@ -122,7 +125,8 @@ class DAG(object):
       self.DAGNames.insert(branchStart+position+1,operator)
       self.DAGTuples.insert(branchStart+position+1,(input, output))
       self.IndentationOfDAG.insert(branchStart+position+1,self.IndentationOfDAG[branchStart]) 
-
+  
+  
   def removeOperator(self,operator,input,output,clear=True,duplicateIndex=0): #clear means remove empty branches
     if type(operator)==int:
       operatorIndex = self.DAGNames.index(str(operator)) #what if you have two identical operators in the DAG?
@@ -152,7 +156,8 @@ class DAG(object):
     self.DAGNames.insert(self.DAGNames.index(operator)+1,'<'+Branch)
     self.DAGTuples.insert(self.DAGNames.index(operator)+1,tuple(tupleStrings))
     self.IndentationOfDAG.insert(self.DAGNames.index(operator)+1,self.IndentationOfDAG[self.DAGNames.index(operator)]+1)    
-    
+  
+  
   def removeBranch(self,Branch,clear=False,mergeCheck = True): #recomputing index is expensive, only do it once
     mergeConflict = False
     if mergeCheck :
@@ -204,14 +209,14 @@ class DAG(object):
     self.DAGTuples.insert(MergePosition,tuple())
     self.IndentationOfDAG.insert(MergePosition,indentationOfMerge)
   
+  
   def removeMerge(self,MergeBranchList,DestinationBranch):
     BranchesToMerge = ''
     for i in range(0,len(MergeBranchList)):
       BranchesToMerge = BranchesToMerge + MergeBranchList[i] +', ' #Builds up list of branches to merge in DAGML format
     del self.IndentationOfDAG[self.DAGNames.index('merge('+BranchesToMerge+DestinationBranch+')')]
     del self.DAGNames[self.DAGNames.index('merge('+BranchesToMerge+DestinationBranch+')')] #removes merge
-    
-    
+      
   
   def branchesInDAG(self): #returns name list
     branches=[]
@@ -221,6 +226,7 @@ class DAG(object):
       if (self.DAGNames[i]+' ')[0]=='<':
         branches.append(self.DAGNames[i][1:len(self.DAGNames[i])])
     return branches
+  
   
   def operatorsInBranch(self,branch): #returns number, change to name list
     #print self.IndentationOfDAG
