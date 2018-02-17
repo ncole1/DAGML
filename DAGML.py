@@ -1,10 +1,13 @@
 class DAG(object):
 
     def __init__(self, path, spacing=True):
-        file = open(path, 'r+')
-        self.DAG = file.read().split('\n')
-        del self.DAG[-1]  # import adds blank line at end
-        file.close()
+        if type (path) != int:
+            file = open(path, 'r+')
+            self.DAG = file.read().split('\n')
+            del self.DAG[-1]  # import adds blank line at end
+            file.close()
+        else:
+            self.DAG = []
         self.dagIndents = []
         dagItem = ''
         spaceCount = int()
@@ -74,7 +77,9 @@ class DAG(object):
                 self.dagItem.append(self.DAG[i].strip())
                 self.dagFlows.append(tuple())
 
-    def export(self, path):
+    def export(self, path, spacing = True):
+        if type(spacing) == int:
+            self.indentSize = spacing
         file = open(path, 'w+')
         spaceString = ''
         itemPlusFlow = ''
@@ -250,4 +255,4 @@ class DAG(object):
         branchIndex = self.dagItem.index('<'+branch)
         del self.dagFlows[branchIndex]
         self.dagFlows.insert(branchIndex, tuple(tupleStrings))
-        # Duplicates not accounted for
+        # Duplicates not accounted for   
