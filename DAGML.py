@@ -169,7 +169,7 @@ class DAG(object):
         else:
             raise Exception('operator must be integer or string')
 
-    def addBranch(self, branch, tupleStrings, operator):
+    def addBranch(self, branch, tupleStrings, operator,duplIndex = 0):
         # format tupleStrings like ('6:7','8:9')
         self.dagItem.insert(self.dagItem.index(operator)+1, '<'+branch)
         t = tuple(tupleStrings)
@@ -255,4 +255,4 @@ class DAG(object):
         branchIndex = self.dagItem.index('<'+branch)
         del self.dagFlows[branchIndex]
         self.dagFlows.insert(branchIndex, tuple(tupleStrings))
-        # Duplicates not accounted for   
+        # Duplicates not accounted for
