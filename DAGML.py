@@ -1,6 +1,12 @@
 def lint(dagIndents, indentSize, dagItem, dagFlows):
     if type(indentSize) != int:
         raise exception ('Error: indentSize is not of type \'int\'.')
+    if type(dagIndents) != list:
+        raise exception ('Error: dagIndents is not of type \'list\'.')
+    if type(dagItem) != list:
+        raise exception ('Error: dagItem is not of type \'list\'.')
+    if type(dagFlows) != list:
+        raise exception ('Error: dagFlows is not of type \'list\'.')
     spaceString = ''
     itemPlusFlow = ''
     itemAndFlow = ''
@@ -22,8 +28,8 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
         if dagFlows[i][-1] == ' '
             raise exception(('Dag flows may not end with a space. Error on line ' + str(i)))
         for j in range(0,len(dagFlows[i])-1):
-            if dagFlows[i][j:j+1] == '::':
-                raise exception(('Dag flows may not have double colons. Error on line ' + str(i)))
+            if dagFlows[i][j:j+2] == '::':
+                raise exception(('Dag flows may not have double or multiple colons. Error on line ' + str(i)))
         for j in range(0,len(dagItem[i])):
             if dagItem[i][j] == '(' or dagItem[i][j] == ')' or dagItem[i][j] == '[' or dagItem[i][j] == ']':
                 raise exception(('Dag items may not contain parentheses or brackets. Error on line ' + str(i)))                
@@ -47,6 +53,8 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
             spaceString = spaceString+' '
         fileForm.append(spaceString+itemAndFlow+'\n')
     fileForm
+    newIndents = []
+    dagLine = ''
     indentLength = 999
     spaceCount = int()
     spaces = int()
@@ -64,28 +72,27 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
             maxSpaces = spaces  # Largest space
     if self.indentSize == 999 and maxSpaces > 0:  # Spaces > 999
         raise Exception('Error involving indentation/spaces')
-        ******************************************************************
-        for i in range(0, len(self.DAG)):  # assigns number of indents in DAG
-            dagItem = self.DAG[i]
-            for j in range(0, len(dagItem)):
-                if dagItem[j] != ' ':
+        for i in range(0, len(fileForm)):  # assigns number of indents in DAG
+            dagLine = fileForm[i]
+            for j in range(0, len(dagLine)):
+                if dagLine[j] != ' ':
                     spaceCount = j
                     break
-                elif j == len(dagItem)-1:
+                elif j == len(dagLine)-1:
                     spaceCount = j+1
-            if spaceCount % self.indentSize == 0:
-                self.dagIndents.append(spaceCount//self.indentSize)
+            if spaceCount % indentLength == 0:
+                newIndents.append(spaceCount//indentLength)
             else:
-                raise Exception('WARNING: improper line indentations')
-        self.dagItem = []
-        self.dagFlows = []
-        dagFlowItems = []
+                raise Exception('ERROR: improper line indentations')
+        newItem = []
+        newFlows = []
+        newFlowItems = []
         itemEndChar = 0
         mergeLine = False
         digitOrColon = []
         for i in range(0, len(self.DAG)):
-            dagFlowItems = []
-            itemAndFlow = self.DAG[i].strip()
+            newFlowItems = []
+            itemAndFlow = fileForm[i].strip()
             mergeLine = False
             digitOrColon = []
             for j in range(0, len(itemAndFlow)):
@@ -102,17 +109,44 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
             if (not mergeLine):
                 if itemEndChar < 1:
                     raise Exception('Empty string is invalid assignment.')
-                self.dagItem.append(itemAndFlow[0:itemEndChar])
+                newItem.append(itemAndFlow[0:itemEndChar])
                 for k in range(itemEndChar, len(itemAndFlow)-1):
                     if (digitOrColon[k]) and (not (digitOrColon[k-1])):
                         for l in range(k, len(itemAndFlow)-1):
                             if (not (digitOrColon[l+1])):
-                                dagFlowItems.append(itemAndFlow[k:l+1])
+                                newFlowItems.append(itemAndFlow[k:l+1])
                                 break
-                self.dagFlows.append(tuple(dagFlowItems))
+                newFlows.append(tuple(newFlowItems))
             else:
-                self.dagItem.append(self.DAG[i].strip())
-                self.dagFlows.append(tuple())
+                newItem.append(self.DAG[i].strip())
+                newFlows.append(tuple())
+    if type (indentLength) != int:
+        raise exception ('Error: New indent length not of type \'int\'.')
+    if type(newIndents) != list:
+        raise exception ('Error: newIndents is not of type \'list\'.')
+    if type(newItem) != list:
+        raise exception ('Error: newItem is not of type \'list\'.')
+    if type(newFlows) != list:
+        raise exception ('Error: newFlows is not of type \'list\'.')
+    if indentLength != indentSize:
+        raise exception('Error: Incorrect new indent length.')
+    if len(newIndents) != len(dagIndents):
+        raise exception('Error: Incorrect number of lines in newIndents.')
+    if len(newItem) != len(dagItem):
+        raise exception('Error: Incorrect number of lines in newItem.')
+    if len(newFlows) != len(dagFlows):
+        raise exception('Error: Incorrect number of lines in newFlows.')
+    for i in range(0, len(newFlows))
+        if newIndents[i] != dagIndents[i]
+            raise exception(('Error: Incorrect new number of indents on line ' + str(i)))
+        if newItem[i] != dagItem[i]
+            raise exception(('Error: Incorrect new dag item on line ' + str(i)))
+        if str(newFlows[i]) != str(dagFlows[i])
+            raise exception(('Error: Incorrect new dag flows on line ' + str(i)))
+        
+            
+                            
+                            
 class DAG(object):
 
     def __init__(self, path, spacing=True):
