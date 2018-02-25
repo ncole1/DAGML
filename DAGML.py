@@ -63,8 +63,8 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
             itemAndFlow = itemAndFlow.replace(",", "][")
         for j in range(0, indentSize*dagIndents[i]):
             spaceString = spaceString+' '
-        fileForm.append(spaceString+itemAndFlow+'\n')
-    fileForm
+        fileForm.append(spaceString+itemAndFlow)
+    #print(fileForm)
     newIndents = []
     dagLine = ''
     indentLength = 999
@@ -84,55 +84,57 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
             maxSpaces = spaces  # Largest space
     if indentLength == 999 and maxSpaces > 0:  # Spaces > 999
         raise Exception('Error involving indentation/spaces')
-        for i in range(0, len(fileForm)):  # assigns number of indents in DAG
-            dagLine = fileForm[i]
-            for j in range(0, len(dagLine)):
-                if dagLine[j] != ' ':
-                    spaceCount = j
-                    break
-                elif j == len(dagLine)-1:
-                    spaceCount = j+1
-            if spaceCount % indentLength == 0:
-                newIndents.append(spaceCount//indentLength)
-            else:
-                raise Exception('ERROR: improper line indentations')
-        newItem = []
-        newFlows = []
+    for i in range(0, len(fileForm)):  # assigns number of indents in DAG
+        dagLine = fileForm[i]
+        for j in range(0, len(dagLine)):
+            if dagLine[j] != ' ':
+                spaceCount = j
+                break
+            elif j == len(dagLine)-1:
+                spaceCount = j+1
+        #print('testyng')
+        if spaceCount % indentLength == 0:
+            newIndents.append(spaceCount//indentLength)
+            #print(spaceCount//indentLength)
+        else:
+            raise Exception('ERROR: improper line indentations')
+    newItem = []
+    newFlows = []
+    newFlowItems = []
+    itemEndChar = 0
+    mergeLine = False
+    digitOrColon = []
+    #print(fileForm)
+    for i in range(0, len(fileForm)):
         newFlowItems = []
-        itemEndChar = 0
+        itemAndFlow = fileForm[i].strip()
         mergeLine = False
         digitOrColon = []
-        fileForm
-        for i in range(0, len(fileForm)):
-            newFlowItems = []
-            itemAndFlow = fileForm[i].strip()
-            mergeLine = False
-            digitOrColon = []
-            for j in range(0, len(itemAndFlow)):
-                digitOrColon.append(((itemAndFlow[j]).isdigit())
-                or (itemAndFlow[j] == ':'))
-            for j in range(0, len(itemAndFlow)):
-                if (itemAndFlow[j] == '(' or itemAndFlow[j] == '['
-                or j == len(itemAndFlow)-1):
-                    itemEndChar = j
-                    break
-            if len(itemAndFlow) > 4:
-                if itemAndFlow[0:5] == 'merge':
-                    mergeLine = True
-            if (not mergeLine):
-                if itemEndChar < 1:
-                    raise Exception('Empty string is invalid assignment.')
-                newItem.append(itemAndFlow[0:itemEndChar])
-                for k in range(itemEndChar, len(itemAndFlow)-1):
-                    if (digitOrColon[k]) and (not (digitOrColon[k-1])):
-                        for l in range(k, len(itemAndFlow)-1):
-                            if (not (digitOrColon[l+1])):
-                                newFlowItems.append(itemAndFlow[k:l+1])
-                                break
-                newFlows.append(tuple(newFlowItems))
-            else:
-                newItem.append(fileForm[i].strip())
-                newFlows.append(tuple())
+        for j in range(0, len(itemAndFlow)):
+            digitOrColon.append(((itemAndFlow[j]).isdigit())
+            or (itemAndFlow[j] == ':'))
+        for j in range(0, len(itemAndFlow)):
+            if (itemAndFlow[j] == '(' or itemAndFlow[j] == '['
+            or j == len(itemAndFlow)-1):
+                itemEndChar = j
+                break
+        if len(itemAndFlow) > 4:
+            if itemAndFlow[0:5] == 'merge':
+                mergeLine = True
+        if (not mergeLine):
+            if itemEndChar < 1:
+                raise Exception('Empty string is invalid assignment.')
+            newItem.append(itemAndFlow[0:itemEndChar])
+            for k in range(itemEndChar, len(itemAndFlow)-1):
+                if (digitOrColon[k]) and (not (digitOrColon[k-1])):
+                    for l in range(k, len(itemAndFlow)-1):
+                        if (not (digitOrColon[l+1])):
+                            newFlowItems.append(itemAndFlow[k:l+1])
+                            break
+            newFlows.append(tuple(newFlowItems))
+        else:
+            newItem.append(fileForm[i].strip())
+            newFlows.append(tuple())
     if type (indentLength) != int:
         raise Exception ('Error: New indent length not of type \'int\'.')
     if type(newIndents) != list:
@@ -149,7 +151,7 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
         raise Exception('Error: Incorrect number of lines in newItem.')
     if len(newFlows) != len(dagFlows):
         raise Exception('Error: Incorrect number of lines in newFlows.')
-    for i in range(0, len(newFlows)):
+    for i in range(0, len(newFlows)):       
         if newIndents[i] != dagIndents[i]:
             raise Exception(('Error: Incorrect new number of indents on line ' + str(i)))
         if newItem[i] != dagItem[i]:
@@ -157,8 +159,7 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
         if str(newFlows[i]) != str(dagFlows[i]):
             raise Exception(('Error: Incorrect new dag flows on line ' + str(i)))
 
-           
-                            
+
                 
 class DAG(object):
 
