@@ -105,9 +105,13 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
     mergeLine = False
     digitOrColon = []
     #print(fileForm)
+    commaPos = []
+    commas = 0
+    operFound = False
     for i in range(0, len(fileForm)):
         newFlowItems = []
         itemAndFlow = fileForm[i].strip()
+        lineLength = len(itemAndFlow)
         mergeLine = False
         digitOrColon = []
         for j in range(0, len(itemAndFlow)):
@@ -135,6 +139,39 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
         else:
             newItem.append(fileForm[i].strip())
             newFlows.append(tuple())
+            if lineLength > 7 and i > 0:
+                mergeOpers = ', '+(itemAndFlow[6:lineLength-1])+','
+                print(mergeOpers)
+                commaPos = []
+                for j in range(0,len(mergeOpers)-1):
+                    if mergeOpers[j] == ',':
+                        commaPos.append(j)
+                print(commaPos)    
+                finalComma = len(mergeOpers)-1
+                print(finalComma)
+                commas = len(commaPos)
+                for j in range(0,commas):
+                    charIndex = commaPos[j]
+                    if j < (commas - 1):
+                        nextComma = commaPos[j+1]
+                    else:
+                        nextComma = finalComma
+                    if nextComma > (charIndex + 2):
+                        operString = mergeOpers[charIndex+2:nextComma]
+                    else:
+                        raise Exception(('Invalid spacing between commas in merge on line '+str(i)))
+                    operFound = False
+                    for k in range(0,i):
+                        if newItem[k] == ('<' + operString):
+                            operFound = True
+                    if (not operFound):
+                        #print('Mark')
+                        #print(newItem)
+                        #print('Rogers')
+                        raise Exception(('Error: operator \''+operString+'\' not found prior to being involved in a merge on line '+str(i)))
+                print('End')
+            else:
+                raise Exception(('Error: Invalid or empty merge on line '+str(i)))
     if type (indentLength) != int:
         raise Exception ('Error: New indent length not of type \'int\'.')
     if type(newIndents) != list:
