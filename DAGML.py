@@ -1,9 +1,10 @@
 from lint import lint
 
+
 class DAG(object):
 
     def __init__(self, path, spacing=True):
-        if type (path) != int:
+        if type(path) != int:
             file = open(path, 'r+')
             self.DAG = file.read().split('\n')
             del self.DAG[-1]  # import adds blank line at end
@@ -55,10 +56,9 @@ class DAG(object):
             digitOrColon = []
             for j in range(0, len(itemAndFlow)):
                 digitOrColon.append(((itemAndFlow[j]).isdigit())
-                or (itemAndFlow[j] == ':'))
+                                    or (itemAndFlow[j] == ':'))
             for j in range(0, len(itemAndFlow)):
-                if (itemAndFlow[j] == '(' or itemAndFlow[j] == '['
-                or j == len(itemAndFlow)-1):
+                if (itemAndFlow[j] == '(' or itemAndFlow[j] == '[' or j == len(itemAndFlow)-1):
                     itemEndChar = j
                     break
             if len(itemAndFlow) > 4:
@@ -79,12 +79,13 @@ class DAG(object):
                 else:
                     print(dagFlowItems)
                     literal = dagFlowItems[0]
-                    self.dagFlows.append((literal,tuple(dagFlowItems[1:len(dagFlowItems)])))
+                    self.dagFlows.append((literal,
+                                         tuple(dagFlowItems[1:len(dagFlowItems)])))
             else:
                 self.dagItem.append(self.DAG[i].strip())
                 self.dagFlows.append(tuple())
 
-    def export(self, path, spacing = True):
+    def export(self, path, spacing=True):
         if type(spacing) == int:
             self.indentSize = spacing
         file = open(path, 'w+')
@@ -101,21 +102,20 @@ class DAG(object):
                 itemPlusFlow = self.dagItem[i]
             itemAndFlow = ''
             for j in range(0, len(itemPlusFlow)):
-                if ((itemPlusFlow[j] != '\'') and ((itemPlusFlow[j] != ' ')
-                or j < len(self.dagItem[i]))):
-                    itemAndFlow = itemAndFlow + (itemPlusFlow[j])                
+                if ((itemPlusFlow[j] != '\'') and ((itemPlusFlow[j] != ' ') or j < len(self.dagItem[i]))):
+                    itemAndFlow = itemAndFlow + (itemPlusFlow[j])
             if dagNameItem[0] == '<':
                 replaceCount = itemAndFlow.count(',(')
-                itemAndFlow = itemAndFlow.replace(",(","|")
+                itemAndFlow = itemAndFlow.replace(",(", "|")
                 itemAndFlow = itemAndFlow[0:len(itemAndFlow)-replaceCount]
                 itemAndFlow = itemAndFlow.replace(")", "]")
                 itemAndFlow = itemAndFlow.replace("(", "[")
-                itemAndFlow = itemAndFlow.replace(",]","]")
-                itemAndFlow = itemAndFlow.replace(",)",")")               
+                itemAndFlow = itemAndFlow.replace(",]", "]")
+                itemAndFlow = itemAndFlow.replace(",)", ")")
                 itemAndFlow = itemAndFlow.replace(",", "][")
             else:
                 replaceCount = itemAndFlow.count(',(')
-                itemAndFlow = itemAndFlow.replace(",(","|")
+                itemAndFlow = itemAndFlow.replace(",(", "|")
                 itemAndFlow = itemAndFlow[0:len(itemAndFlow)-replaceCount]
             for j in range(0, self.indentSize*self.dagIndents[i]):
                 spaceString = spaceString+' '
@@ -140,14 +140,14 @@ class DAG(object):
                 print(str(branchStart) + '_')
                 break
         for i in range(branchStart+1, len(self.dagItem)):
-            if ((self.dagItem[i]+' ')[0] == '<'
-            or self.dagIndents[i] != self.dagIndents[i-1]):
+            if ((self.dagItem[i]+' ')[0] == '<' or self.dagIndents[i] != self.dagIndents[i-1]):
                 branchEnd = i
                 print(branchEnd)
                 break
         return branchEnd-branchStart-1
 
-    def addOperator(self, branchName, operator, input, output, position, literal=True):
+    def addOperator(self, branchName, operator, input,
+                    output, position, literal=True):
         branchStart = self.dagItem.index('<'+branchName)
         if self.operatorsInBranch(branchName)+1 < position:
             raise Exception('Position value too high for branch length')
@@ -156,7 +156,7 @@ class DAG(object):
             self.dagItem.insert(place, operator)
             h = (input, output)
             if type(literal) != bool:
-                self.dagFlows.insert(place, (literal,h))
+                self.dagFlows.insert(place, (literal, h))
             else:
                 self.dagFlows.insert(place, h)
             self.dagIndents.insert(place, self.dagIndents[branchStart])
@@ -171,8 +171,7 @@ class DAG(object):
             del self.dagItem[operIndex]
             del self.dagFlows[operIndex]
             del self.dagIndents[operIndex]
-            if (clear and (self.dagItem[operIndex-1] + ' ')[0] == '<'
-            and (self.dagItem[operIndex] + ' ')[0] == '<'):
+            if (clear and (self.dagItem[operIndex-1] + ' ')[0] == '<' and (self.dagItem[operIndex] + ' ')[0] == '<'):
                 del self.dagItem[operIndex-1]
                 del self.dagFlows[operIndex-1]
                 del self.dagIndents[operIndex-1]
@@ -181,20 +180,20 @@ class DAG(object):
             del self.dagItem[operIndex]
             del self.dagFlows[operIndex]
             del self.dagIndents[operIndex]
-            if (clear and (self.dagItem[operIndex-1] + ' ')[0] == '<'
-            and (self.dagItem[operIndex] + ' ')[0] == '<'):
+            if (clear and (self.dagItem[operIndex-1] + ' ')[0] == '<' and (self.dagItem[operIndex] + ' ')[0] == '<'):
                 del self.dagItem[operIndex-1]
                 del self.dagFlows[operIndex-1]
                 del self.dagIndents[operIndex-1]
         else:
             raise Exception('operator must be integer or string')
 
-    def addBranch(self, branch, tupleStrings, operator,duplIndex = 0, literal=True):
+    def addBranch(self, branch, tupleStrings, operator,
+                  duplIndex=0, literal=True):
         # format tupleStrings like ('6:7','8:9')
         self.dagItem.insert(self.dagItem.index(operator)+1, '<'+branch)
         t = tuple(tupleStrings)
         if type(literal) != bool:
-            self.dagFlows.insert(self.dagItem.index(operator)+1, (literal,t))
+            self.dagFlows.insert(self.dagItem.index(operator)+1, (literal, t))
         else:
             self.dagFlows.insert(self.dagItem.index(operator)+1, t)
         indents = self.dagIndents[self.dagItem.index(operator)]+1
@@ -266,29 +265,30 @@ class DAG(object):
         del self.dagIndents[index]
         del self.dagItem[self.dagItem.index('merge('+toMerge+destination+')')]
         # removes merge
-#____________________________________________________________________________________________(03/09/2018)
-    def editIO(self, operator, input, output, duplIndex=0, literal = True, keepLiteral = False):  # operators
+
+    def editIO(self, operator, input, output, duplIndex=0,
+               literal=True, keepLiteral=False):  # operators
         operIndex = self.dagItem.index(operator)  # operator string
         # must include arguments of pre-existing operator
-        if keepLiteral:            
+        if keepLiteral:
             if len(self.dagFlows[operIndex]) > 0:
                 literal = self.dagFlows[operIndex][0]
                 if type(self.dagFlows[operIndex][1]) != tuple:
-                    #print(self.dagFlows[operIndex][1])
+                    # print(self.dagFlows[operIndex][1])
                     raise Exception('Error: Missing or improper literal.')
             else:
                 raise Exception('Error: operator literal is missing')
         del self.dagFlows[operIndex]
         if type(literal) != bool:
-            self.dagFlows.insert(operIndex, (literal,(input, output)))
+            self.dagFlows.insert(operIndex, (literal, (input, output)))
         else:
             self.dagFlows.insert(operIndex, (input, output))
-            
 
-    def editSlice(self, branch, tupleStrings, duplIndex=0, literal = True, keepLiteral = False):
+    def editSlice(self, branch, tupleStrings, duplIndex=0,
+                  literal=True, keepLiteral=False):
         # format tupleStrings like ('6:7','8:9')
         branchIndex = self.dagItem.index('<'+branch)
-        if keepLiteral:            
+        if keepLiteral:
             if len(self.dagFlows[branchIndex]) > 0:
                 literal = self.dagFlows[branchIndex][0]
                 if type(self.dagFlows[branchIndex][1]) != tuple:
@@ -301,12 +301,13 @@ class DAG(object):
         else:
             self.dagFlows.insert(branchIndex, tuple(tupleStrings))
         # Duplicates not accounted for
-    def editBranchLiteral(self, branch, literal = True):
+
+    def editBranchLiteral(self, branch, literal=True):
         branchIndex = self.dagItem.index('<'+branch)
         complex = False
         if len(self.dagFlows[branchIndex]) > 1:
             if type(self.dagFlows[branchIndex][1]) == tuple:
-                complex = True    
+                complex = True
         if complex:
             innerTuple = self.dagFlows[branchIndex][1]
         else:
@@ -316,12 +317,13 @@ class DAG(object):
             self.dagFlows.insert(branchIndex, (literal, innerTuple))
         else:
             self.dagFlows.insert(branchIndex, innerTuple)
-    def editOperatorLiteral(self, operator, literal = True):        
+
+    def editOperatorLiteral(self, operator, literal=True):
         operIndex = self.dagItem.index(operator)
         complex = False
         if len(self.dagFlows[operIndex]) > 1:
             if type(self.dagFlows[operIndex][1]) == tuple:
-                complex = True    
+                complex = True
         if complex:
             innerTuple = self.dagFlows[operIndex][1]
         else:
@@ -330,4 +332,4 @@ class DAG(object):
         if type(literal) != bool:
             self.dagFlows.insert(operIndex, (literal, innerTuple))
         else:
-            self.dagFlows.insert(operIndex, innerTuple)  
+            self.dagFlows.insert(operIndex, innerTuple)
