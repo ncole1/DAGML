@@ -5,6 +5,4 @@ This is the definition and Python 3.x reference implementation library for the m
 
 The DAGML standard is complete, the interaction library has now entered beta. 
 
-Documentation available here:
-
-https://sites.google.com/view/dagml/home
+Documentation available here: https://sites.google.com/view/dagml/home
