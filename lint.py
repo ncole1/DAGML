@@ -58,12 +58,61 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
             or j < len(dagItem[i]))):
                 itemAndFlow = itemAndFlow + (itemPlusFlow[j])
         if dagNameItem[0] == '<':
+            replaceCount = itemAndFlow.count(',(')
+            itemAndFlow = itemAndFlow.replace(",(","|")
+            itemAndFlow = itemAndFlow[0:len(itemAndFlow)-replaceCount]
             itemAndFlow = itemAndFlow.replace(")", "]")
             itemAndFlow = itemAndFlow.replace("(", "[")
+            itemAndFlow = itemAndFlow.replace(",]","]")
+            itemAndFlow = itemAndFlow.replace(",)",")")
             itemAndFlow = itemAndFlow.replace(",", "][")
+        else:
+            replaceCount = itemAndFlow.count(',(')
+            itemAndFlow = itemAndFlow.replace(",(","|")
+            itemAndFlow = itemAndFlow[0:len(itemAndFlow)-replaceCount]
         for j in range(0, indentSize*dagIndents[i]):
             spaceString = spaceString+' '
         fileForm.append(spaceString+itemAndFlow)
+        print(spaceString+itemAndFlow)
+        print('Indicator number 1')
+    '''
+        if type(spacing) == int:
+            self.indentSize = spacing
+        file = open(path, 'w+')
+        spaceString = ''
+        itemPlusFlow = ''
+        itemAndFlow = ''
+        dagNameItem = ''
+        for i in range(0, len(self.dagIndents)):
+            spaceString = ''
+            dagNameItem = self.dagItem[i] + ' '
+            if str(self.dagFlows[i]) != '()' or dagNameItem[0] == '<':
+                itemPlusFlow = self.dagItem[i] + str(self.dagFlows[i])
+            else:
+                itemPlusFlow = self.dagItem[i]
+            itemAndFlow = ''
+            for j in range(0, len(itemPlusFlow)):
+                if ((itemPlusFlow[j] != '\'') and ((itemPlusFlow[j] != ' ')
+                or j < len(self.dagItem[i]))):
+                    itemAndFlow = itemAndFlow + (itemPlusFlow[j])                
+            if dagNameItem[0] == '<':
+                replaceCount = itemAndFlow.count(',(')
+                itemAndFlow = itemAndFlow.replace(",(","|")
+                itemAndFlow = itemAndFlow[0:len(itemAndFlow)-replaceCount]
+                itemAndFlow = itemAndFlow.replace(")", "]")
+                itemAndFlow = itemAndFlow.replace("(", "[")
+                itemAndFlow = itemAndFlow.replace(",]","]")
+                itemAndFlow = itemAndFlow.replace(",)",")")               
+                itemAndFlow = itemAndFlow.replace(",", "][")
+            else:
+                replaceCount = itemAndFlow.count(',(')
+                itemAndFlow = itemAndFlow.replace(",(","|")
+                itemAndFlow = itemAndFlow[0:len(itemAndFlow)-replaceCount]
+            for j in range(0, self.indentSize*self.dagIndents[i]):
+                spaceString = spaceString+' '
+            file.write(spaceString+itemAndFlow+'\n')
+        file.close()
+    '''
     #print(fileForm)
     newIndents = []
     dagLine = ''
@@ -135,7 +184,15 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
                         if (not (digitOrColon[l+1])):
                             newFlowItems.append(itemAndFlow[k:l+1])
                             break
-            newFlows.append(tuple(newFlowItems))
+            #newFlows.append(tuple(newFlowItems))           
+            
+            if (itemAndFlow[itemEndChar:len(itemAndFlow)]).count('|') == 0:
+                newFlows.append(tuple(newFlowItems))
+            else:
+                print(newFlowItems)
+                literal = newFlowItems[0]
+                newFlows.append((literal,tuple(newFlowItems[1:len(newFlowItems)])))
+        
         else:
             newItem.append(fileForm[i].strip())
             newFlows.append(tuple())
@@ -194,4 +251,6 @@ def lint(dagIndents, indentSize, dagItem, dagFlows):
         if newItem[i] != dagItem[i]:
             raise Exception(('Error: Incorrect new dag item on line ' + str(i)))
         if str(newFlows[i]) != str(dagFlows[i]):
+            print(str(newFlows[i]))
+            print(str(dagFlows[i]))
             raise Exception(('Error: Incorrect new dag flows on line ' + str(i)))
