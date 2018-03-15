@@ -1,0 +1,109 @@
+<h2>Introduction</h2>
+<p>I needed a markup language to represent Directed Acyclic Graphs (DAGs) of operators for my Geodagl machine learning project. The markup language needed to be as as simple, non-verbose, and human readable as possible in the pursuit of these goals. It also needed to be able to scale giant graphs. All of the existing markup languages for representing graphs are in the style of json or xml, and they all work by defining node and connections explicitly. The json and xml verbosity can be resolved by creating a pythonic language and that's a fairly minor fork of an existing languages, but the concept of representing every node and connection inherently can't scale. So I wanted to instead create a markup language that described smallest amount possible about a DAG- the nodes and the forking and merging of the series of them. Everything else can be implicit. This is also important because the size of the file scales with node number, not edge number, which produces much smaller files for most DAGs. My attempt at a markup language standard to achieve this is below:</p>
+
+<h2>Core Element 1: Operators</h2>
+<p>An <b>operator</b> is the function the DAG will compute at a node. Operators take argument(s) <i>[input]</i> and return value(s) <i>[output]</i>. Operators are defined by simply giving them a name, any string not to the right of a "<" (besides those beginning with the merge keyword) will be parsed as an operator name. Operator names can be reused for multiple nodes, this implies the function is the same not that only one node exists with that function name. Operators implicitly will take inputs from the operator before them.</p>
+
+<h2>Core Element 2: IOs </h2>
+
+!!
+
+`Square(:,2)`
+<br/>
+<sub>Defining an operator called 'Square'</sub>
+
+Operators must be followed by the number of input and output arguments in the form (<input>,<output>). : represents a variable number. Operators receiving inputs in greater number than they can accept will discard all excess inputs. 
+
+<h2>Core Element 3: Branches</h2>
+<p>Operators can be organized into <b>branches</b>. A branch is a series of operations connected from first to last, and execute independently. </p>
+<p>A branch is declared by `\<name` These branch indices can be arbitrary, but for readability they should follow an ascending pattern as well as the graph permits such that higher numbers are more distal to the initial nodes. 
+The cut refers to the elements of the vector passed from the incoming function to the branch, represented as number1:number2 from the list, where n can be used to represent the last number. Graphs that don't send an output from one operator to a new operator are not valid.</p>
+
+<h2>Core Element 4: Slices</h2>
+Branches also must select the number of outputs from the operator they originate from, via a <b>slice</b>. The slice is put after the operator, follows the conventions of a list slice in Python 3.x. Not all output values from the originating operator need to be used.
+
+```
+<0[1:3][5:7]
+Square(:,3)
+MultiplyByTwo(4:934,7)
+AddConstant(3,2)
+```
+<sub>Defining a branch labeled 0, it has three nodes. The output of Square is fed to MultiplybyTwo which in turn passes its result to AddConstant to get the final result of passing a value through this branch.</sub>
+<br/>
+<p>Nodes can identified by `[branch index]:[operator name]`, so to reference the 2nd node you would write `0:AddConstant`. The same thing can be accomplished by `0:3` however this may introduce silent bugs if the operation list of node 0 is changed.</p>
+
+<p>If no operators are defined under a branch there is an implicit anonymous node that is the pass through function [ f(x) = x ].</p>
+
+<h2>Core Element 5: Literals</h2>
+
+An operator can also have a literal, which is a built-in numerical argument. For example,
+
+`MultiplyBy(2|1,7)`
+
+This operator doubles a number.
+
+The above DAGML becomes
+```
+<0[1:3][5:7]
+Square(:,3)
+MultiplyBy(2|4:934,7)
+AddConstant(3,2)
+```
+<h2>Core Element 6: Forks</h2>
+<p>A branch can <b>fork</b> into multiple branches, its last node passes the output to the first node of all new child branches.</p>
+<p>Forking branches are defined exactly the same as the parent branch except that they have an indent of one space with respect to their parent. They also follow their parent immediately.</p>
+
+```
+<0[]
+ <1[]
+ <2[]
+```
+<sub>Defining a branch `<0[]` and two child branches arising from it `<1[]` and `<2[]`.</sub>
+
+<p>
+By definition child branches spring from the last node of the parent branch, in some cases when you define a single branch it can be automatically split into two branches by attaching another branch onto a node other than the end (see merge)
+</p>
+
+<h2>Core Element 7: Merges</h2>
+<p>Branches can <b>merge</b> into one new branch, the first node of the new branch must accept arguments from the last node of all contributing branches.<p>
+<p>Merging can create new branches by connecting to ancestor nodes that are not the end of the ancestor branch, or if the end point already has a child branch.</p>
+<p>Merging is done by calling `merge(1, 2, 3, ...)` after all the merging nodes have been declared.<p>
+
+```
+<0[]
+ <1[]
+ <2[]
+merge(1, 2)
+```
+<sub>Defining a branch `<0[]` and two child branches arising from it `<1[]` and `<2[]` and then merging them back into one new branch. This graph looks like a diamond.</sub>
+
+It is possible to connect to ancestor branches:
+
+```
+<0[]
+ <1[]
+ <2[]
+merge(1, 2, 0)
+```
+<sub>Adds a connection straight from the new branch to `<0>`, this means the first operator of the new branch must accept at least three arguments. It also means that those arguments aren't perfectly independent as the output of `<0>` is fed through some transformations to produce `<1>` and `<2>`</sub>
+
+<h2>Example</h2>
+
+```
+<0[1:3][5:7]
+Square(:,3)
+MultiplyByTwo(4:934,7)
+AddConstant(3,2)
+ <1[]
+ SumOfSquares(1,1)
+  <Branch Test[]
+ <Paint Branch[6:7][8:9][10:11]
+ SumOfCubes(3,4)
+merge(1, Paint Branch, 0)
+ <2[]
+ NaturalLog(2,2)
+  <Test Branch[6:7][8:9]
+merge(1, 2, 0)
+Round(2,1)
+
+```
