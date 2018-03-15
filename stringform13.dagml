@@ -1,0 +1,17 @@
+<0[1:3][5:7]
+Square(:,2)
+Triangle(3|4:934,7)
+AddConstant(0|3,2)
+ <1[]
+ MultiplyBy(5|2,3)
+ ExponentialOf(2,3)
+ MetroTrainOperator(1,1)
+  <Branch Test[0|]
+ <Paint Branch[1|6:7][8:9][10:11]
+ SumOfCubes(2|3,4)
+merge(1, Paint Branch, 0)
+ <2[2|]
+ NaturalLog(2,2)
+  <Test Branch[1|6:7][8:9]
+merge(1, 2, 0)
+Round(0|2,1)
