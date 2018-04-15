@@ -118,7 +118,7 @@ class DAG(object):
                     litProd = 1
                     if beginGroup < dagLine:
                         for prodLine in range(beginGroup,dagLine+1):
-                            litProd = litProd * dagFlows[sumLine][0]
+                            litProd = litProd * dagFlows[prodLine][0]
                         dagFlows[dagLine][0] = litProd                    
                         for n in range(beginGroup,dagLine):
                             dagItem[n] = 'null' 
